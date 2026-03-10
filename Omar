@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alhambra Elite - Ultimate Pro</title>
+    <style>
+        :root { --gold: #c5a059; --red: #8e2121; --blue: #1a3a5f; --paper: rgba(255, 255, 255, 0.9); }
+        @keyframes motionBG {
+            0% { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJidW5ndm90azRyeXN6eHpsbm96eXp6eXp6eXp6eXp6eXp6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41lS2Msh6CCvXLS8/giphy.gif'); }
+            50% { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXN6eHpsbm96eXp6eXp6eXp6eXp6eXp6eXp6eXp6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxx6r7Y0l7G/giphy.gif'); }
+            100% { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNm56eHpsbm96eXp6eXp6eXp6eXp6eXp6eXp6eXp6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26BRzozg4TCBXv6QU/giphy.gif'); }
+        }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; animation: motionBG 40s infinite; background-size: cover; background-attachment: fixed; }
+        .page { display: none; padding: 20px; background: var(--paper); min-height: 100vh; box-sizing: border-box; }
+        .header { background: var(--red); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
+        #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 20000; background: #1a3a5f; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; border: 3px solid var(--gold); text-align: center; }
+        .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 600px; margin: 20px auto; }
+        .icon-card { background: white; padding: 20px; border-radius: 15px; border: 2px solid var(--gold); cursor: pointer; text-align: center; transition: 0.3s; }
+        .btn { background: var(--red); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin: 5px 0; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--gold); box-sizing: border-box; }
+        .streak-badge { background: white; color: var(--red); padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 2px solid var(--gold); }
+        .item-row { background: white; padding: 12px; margin: 8px 0; border-radius: 10px; border-left: 5px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .correct { border: 2px solid #4caf50 !important; background: #e8f5e9 !important; }
+        .wrong { border: 2px solid #f44336 !important; background: #ffebee !important; }
+        .hist-card { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .audio-btn { background: var(--blue); color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold; }
+    </style>
+</head>
+<body> 
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h1 style="color: var(--red);">🏰 ALHAMBRA ELITE</h1>
+            <input type="password" id="pass-input" placeholder="Pin: 4444" style="text-align:center;">
+            <button class="btn" onclick="checkPass()">ENTRAR</button>
+        </div>
+    </div> 
+
+    <div id="app" style="display:none;">
+        <div id="home" class="page" style="display:block;">
+            <div class="header"><span>🇪🇸 PANEL ELITE</span><div id="streak-disp" class="streak-badge">🔥 0</div></div>
+            <div class="icon-grid">
+                <div class="icon-card" onclick="showPage('lessons-menu')">📚<h3>Lecciones</h3></div>
+                <div class="icon-card" onclick="showPage('repaso-page')">🔄<h3>Repaso</h3></div>
+                <div class="icon-card" onclick="showPage('grammar-page')">⚖️<h3>Gramática</h3></div>
+                <div class="icon-card" onclick="showPage('exam-hall')">📝<h3>Exámenes</h3></div>
+                <div class="icon-card" onclick="showPage('exam-historia')">📜<h3>Historial</h3></div>
+                <div class="icon-card" onclick="showPage('e-factory')">🛠️<h3>Creadور</h3></div>
+            </div>
+            <div class="icon-grid">
+                <button class="btn" style="background:var(--blue)" onclick="exportData()">📦 Backup</button>
+                <button class="btn" style="background:#4caf50" onclick="document.getElementById('file-input').click()">📤 Import</button>
+                <input type="file" id="file-input" style="display:none" onchange="importData(event)">
+                <button class="btn" style="background:var(--red)" onclick="showPage('l-factory')">⚙️ Smart Entry</button>
+            </div>
+        </div> 
+
+        <div id="exam-historia" class="page">
+            <div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Historial</h2></div>
+            <div id="hist-list"></div>
+            <button class="btn" style="background:#f44336; margin-top:20px;" onclick="clearHistory()">Borrar Historial</button>
+        </div>
+
+        <div id="e-factory" class="page">
+            <div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Creador</h2></div>
+            <input type="text" id="e-title-input" placeholder="عنوان السؤال">
+            <select id="e-type" onchange="toggleFactoryFields()">
+                <option value="mcq">MCQ (اختيارات)</option>
+                <option value="written">Written (سؤال مقالي)</option>
+                <option value="reading">Reading (قطعة + سؤال)</option>
+                <option value="listening">Listening (استماع + سؤال)</option>
+            </select>
+            <input type="number" id="e-time" placeholder="الوقت">
+            <div id="reading-field" style="display:none;"><textarea id="e-text" placeholder="اكتب النص هنا (للقطعة أو للاستماع)..."></textarea></div>
+            <textarea id="e-main-q" placeholder="رأس السؤال"></textarea>
+            <div id="opts-field-container">
+                <input type="text" id="e-opts-input" placeholder="الاختيارات (كومة ,) - سيبها فاضية لو مقالي">
+            </div>
+            <input type="text" id="e-correct-input" placeholder="الإجابة الصحيحة">
+            <button class="btn" onclick="saveExam()">Añadir</button>
+            <div id="delete-list"></div>
+        </div>
+
+        <div id="exam-hall" class="page">
+            <div class="header"><button onclick="stopExam()" style="background:none; border:none; color:white; font-size:1.5rem;">X</button><div id="timer" style="font-size:1.5rem; font-weight:bold;">00:00</div></div>
+            <div id="exam-render"></div>
+            <button class="btn" onclick="finishExam()">FINALIZAR EXAMEN</button>
+        </div>
+
+        <div id="l-factory" class="page">
+            <div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Smart Entry</h2></div>
+            <input type="number" id="l-n" placeholder="Lesson #">
+            <textarea id="l-bulk" style="height:200px;"></textarea>
+            <button class="btn" onclick="saveBulkWords()">Guardar</button>
+        </div>
+
+        <div id="lessons-menu" class="page"><div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Lecciones</h2></div><div id="l-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;"></div></div>
+        <div id="lesson-content" class="page"><div class="header"><button onclick="showPage('lessons-menu')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2 id="lesson-title"></h2></div><div id="lesson-inner-content"></div></div>
+        <div id="repaso-page" class="page"><div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Repaso</h2></div><div id="repaso-card" class="login-box" style="margin-top:50px;"><h2 id="rep-word" style="font-size:2rem;">---</h2><h3 id="rep-ans" style="color:var(--gold); display:none;">---</h3><button class="btn" onclick="document.getElementById('rep-ans').style.display='block'">Mostrar</button><button class="btn" style="background:#4caf50" onclick="nextRepaso()">Siguiente</button></div></div>
+        <div id="grammar-page" class="page"><div class="header"><button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:1.5rem;">←</button><h2>Gramática</h2></div><input type="number" id="g-lesson" placeholder="L#"><input type="text" id="g-title" placeholder="Título"><textarea id="g-body"></textarea><button class="btn" onclick="saveGrammar()">Guardار</button><div id="grammar-list"></div></div>
+    </div> 
+
+    <script>
+        let clock; let correctAnswers = [];
+        function speak(t) { if('speechSynthesis' in window) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang='es-ES'; u.rate = 0.9; window.speechSynthesis.speak(u); } }
+        function checkPass() { if(document.getElementById('pass-input').value==='4444'){ document.getElementById('login-screen').style.display='none'; document.getElementById('app').style.display='block'; updateStreak(); } else alert("Error!"); }
+        
+        function toggleFactoryFields() { 
+            let t=document.getElementById('e-type').value; 
+            document.getElementById('reading-field').style.display=(t==='reading' || t==='listening')?'block':'none';
+            document.getElementById('opts-field-container').style.display=(t==='written')?'none':'block';
+        }
+        
+        function showPage(p) { 
+            document.querySelectorAll('.page').forEach(pg=>pg.style.display='none'); 
+            document.getElementById(p).style.display='block'; 
+            if(p==='e-factory') { renderDeleteList(); toggleFactoryFields(); }
+            if(p==='exam-hall') renderExam();
+            if(p==='lessons-menu') renderLessonsGrid();
+            if(p==='repaso-page') nextRepaso();
+            if(p==='exam-historia') renderHistory();
+        }
+
+        function saveBulkWords() {
+            let n=document.getElementById('l-n').value, text=document.getElementById('l-bulk').value;
+            if(!n || !text) return;
+            let db=JSON.parse(localStorage.getItem('W_DB') || '{}');
+            if(!db[n]) db[n] = {words:[], grammar:[]};
+            text.split('\n').forEach(line => { let p=line.split(/[:\-]/); if(p.length>=2) db[n].words.push({es:p[0].trim(), ar:p[1].trim()}); });
+            localStorage.setItem('W_DB', JSON.stringify(db)); alert("Listo!"); showPage('home');
+        }
+
+        function renderLessonsGrid() {
+            let g=document.getElementById('l-grid'); g.innerHTML='';
+            let db=JSON.parse(localStorage.getItem('W_DB') || '{}');
+            Object.keys(db).sort((a,b)=>a-b).forEach(n => { g.innerHTML += `<div class="icon-card" onclick="openLesson(${n})">L${n}<br><small>${db[n].words.length} W</small></div>`; });
+        }
+
+        function openLesson(n) {
+            let db=JSON.parse(localStorage.getItem('W_DB')||'{}'), d=db[n];
+            document.getElementById('lesson-title').innerText="Lección "+n;
+            document.getElementById('lesson-inner-content').innerHTML = d.words.map((w, i)=>`
+                <div class="item-row">
+                    <div><button onclick="speak('${w.es}')">🔊</button> ${w.es}</div>
+                    <div><span>${w.ar}</span> <button onclick="deleteWord(${n}, ${i})" style="color:red; background:none; border:none;">✕</button></div>
+                </div>`).join('');
+            showPage('lesson-content');
+        }
+
+        function deleteWord(ln, wi) { if(confirm("¿Eliminar?")){ let db=JSON.parse(localStorage.getItem('W_DB')||'{}'); db[ln].words.splice(wi,1); localStorage.setItem('W_DB', JSON.stringify(db)); openLesson(ln); } }
+
+        function saveExam() {
+            let db=JSON.parse(localStorage.getItem('E_DATA')||'[]');
+            db.push({ title:document.getElementById('e-title-input').value, type:document.getElementById('e-type').value, text:document.getElementById('e-text').value, mainQ:document.getElementById('e-main-q').value, opts:document.getElementById('e-opts-input').value, ans:document.getElementById('e-correct-input').value, time:document.getElementById('e-time').value });
+            localStorage.setItem('E_DATA', JSON.stringify(db)); alert("Ok!"); renderDeleteList();
+        }
+
+        function renderExam() {
+            let area=document.getElementById('exam-render'); area.innerHTML='';
+            let db=JSON.parse(localStorage.getItem('E_DATA')||'[]'); correctAnswers=[];
+            if(db.length === 0) { area.innerHTML = "<h2 style='text-align:center;'>No hay exámenes</h2>"; return; }
+            db.forEach((sec, sIdx) => {
+                let html = `<div class="exam-card" style="margin-bottom:25px; border:2px solid var(--gold); border-radius:15px; background:white; overflow:hidden;">
+                            <div style="background:var(--red); color:white; padding:10px;">${sec.type.toUpperCase()}</div><div style="padding:15px;">`;
+                
+                if(sec.type==='listening' && sec.text) {
+                    html += `<button class="audio-btn" onclick="speak(\`${sec.text}\`)">🔊 Escuchar Audio</button>`;
+                }
+                
+                if(sec.type==='reading' && sec.text) html += `<div style="background:#fdf6e3; padding:15px; border-radius:10px; margin-bottom:15px;">${sec.text}</div>`;
+                
+                html += `<p style="font-weight:bold; color:var(--blue);">${sec.mainQ || ""}</p>`;
+                
+                if(sec.type === 'written') {
+                    html += `<input type="text" id="written_${sIdx}" placeholder="Escribe tu respuesta aquí..." style="border: 2px solid var(--blue);">`;
+                    correctAnswers.push({type: 'written', id: `written_${sIdx}`, ans: sec.ans.trim().toLowerCase()});
+                } else if(sec.opts) {
+                    sec.opts.split(',').forEach(opt => {
+                        let c = opt.trim();
+                        if(c === (sec.ans||"").trim()) correctAnswers.push({type: 'mcq', name: `q_${sIdx}`, val: c});
+                        html += `<label style="display:block; padding:12px; border:1px solid #ddd; margin:8px 0; border-radius:10px;"><input type="radio" name="q_${sIdx}" value="${c}"> ${c}</label>`;
+                    });
+                }
+                area.innerHTML += html + `</div></div>`;
+            });
+            startClock(db[0]?.time || 30);
+        }
+
+        function finishExam() {
+            clearInterval(clock);
+            let score = 0;
+            correctAnswers.forEach(ca => {
+                if(ca.type === 'written') {
+                    let userVal = document.getElementById(ca.id).value.trim().toLowerCase();
+                    if(userVal === ca.ans) { score++; document.getElementById(ca.id).classList.add('correct'); }
+                    else { document.getElementById(ca.id).classList.add('wrong'); }
+                } else {
+                    let sel = document.querySelector(`input[name="${ca.name}"]:checked`);
+                    if(sel && sel.value === ca.val) { score++; sel.parentElement.classList.add('correct'); }
+                    else if(sel) { sel.parentElement.classList.add('wrong'); }
+                }
+            });
+
+            let finalScore = `${score} / ${correctAnswers.length}`;
+            alert("Puntuación: " + finalScore);
+            let history = JSON.parse(localStorage.getItem('E_HIST') || '[]');
+            let currentExams = JSON.parse(localStorage.getItem('E_DATA') || '[]');
+            history.push({ date: new Date().toLocaleString(), score: finalScore, examTitle: currentExams[0]?.title || "Examen" });
+            localStorage.setItem('E_HIST', JSON.stringify(history));
+            localStorage.setItem('E_DATA', JSON.stringify([]));
+            setTimeout(() => { showPage('home'); }, 2000);
+        }
+
+        function renderHistory() {
+            let hList = document.getElementById('hist-list');
+            let history = JSON.parse(localStorage.getItem('E_HIST') || '[]');
+            hList.innerHTML = history.reverse().map(h => `<div class="hist-card"><div><strong>${h.examTitle}</strong><br><small>${h.date}</small></div><div style="color:var(--red); font-weight:bold;">${h.score}</div></div>`).join('');
+        }
+        function clearHistory() { if(confirm("¿Borrar?")) { localStorage.setItem('E_HIST', JSON.stringify([])); renderHistory(); } }
+        function updateStreak() { let last=localStorage.getItem('last_visit'), streak=parseInt(localStorage.getItem('streak')||'0'), today=new Date().toDateString(); if(last!==today) { streak=(last===new Date(Date.now()-864e5).toDateString())?streak+1:1; localStorage.setItem('streak', streak); localStorage.setItem('last_visit', today); } document.getElementById('streak-disp').innerText="🔥 "+streak; }
+        function nextRepaso() { let db=JSON.parse(localStorage.getItem('W_DB')||'{}'), all=[]; Object.values(db).forEach(l=>all.push(...l.words)); if(!all.length)return; let r=all[Math.floor(Math.random()*all.length)]; document.getElementById('rep-word').innerText=r.es; document.getElementById('rep-ans').innerText=r.ar; document.getElementById('rep-ans').style.display='none'; }
+        function renderDeleteList() { let db=JSON.parse(localStorage.getItem('E_DATA')||'[]'); document.getElementById('delete-list').innerHTML=db.map((it,i)=>`<div style="padding:5px; border-bottom:1px solid #ccc;">${it.title} <button onclick="delE(${i})">X</button></div>`).join(''); }
+        function delE(i) { let db=JSON.parse(localStorage.getItem('E_DATA')||'[]'); db.splice(i,1); localStorage.setItem('E_DATA', JSON.stringify(db)); renderDeleteList(); }
+        function startClock(m) { let s=m*60; clearInterval(clock); clock=setInterval(()=>{ let mi=Math.floor(s/60), se=s%60; document.getElementById('timer').innerText=`${mi}:${se<10?'0':''}${se}`; if(s--<=0) finishExam(); },1000); }
+        function stopExam() { clearInterval(clock); showPage('home'); }
+        function exportData() { let b=new Blob([JSON.stringify(localStorage)], {type:'application/json'}); let u=URL.createObjectURL(b); let a=document.createElement('a'); a.href=u; a.download='backup.json'; a.click(); }
+        function importData(e) { let r=new FileReader(); r.onload=(ev)=>{ let d=JSON.parse(ev.target.result); Object.keys(d).forEach(k=>localStorage.setItem(k, d[k])); location.reload(); }; r.readAsText(e.target.files[0]); }
+    </script>
+</body>
+</html>
